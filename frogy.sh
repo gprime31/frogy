@@ -23,7 +23,7 @@ echo -e "
 
 ############################################################### Housekeeping tasks ######################################################################
 
-echo -e "\e[94mEnter the organisation name (E.g., Carbon Black): \e[0m"
+echo -e "\e[94mEnter the directory name where to save output: \e[0m"
 read org
 
 cdir=`echo $org | tr '[:upper:]' '[:lower:]'| tr " " "_"`
@@ -61,33 +61,34 @@ fi
 
 echo -e "\e[92mIdentifying Subdomains \e[0m"
 
-echo -n "Is this program is in the CHAOS dataset? (y/n)? "
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-        curl -s https://chaos-data.projectdiscovery.io/index.json -o index.json
-	chaosvar=`cat index.json | grep -w $cdir | grep "URL" | sed 's/"URL": "//;s/",//' | xargs`
-	if [ -z "$chaosvar" ]
-	then
-		echo -e "\e[36mSorry! could not find data in CHAOS DB...\e[0m"
-		subfinder -d $domain_name --silent -o output/$cdir/subfinder.txtls > /dev/null 2>&1
-	        cat output/$cdir/subfinder.txtls | unfurl domains >> all.txtls
-	else
-		curl -s "$chaosvar" -O
-		unzip -qq *.zip
-		cat *.txt >> output/$cdir/chaos.txtls
-		cat output/$cdir/chaos.txtls | unfurl domains >> all.txtls
-		echo -e "\e[36mChaos count: \e[32m$(cat output/$cdir/chaos.txtls | tr '[:upper:]' '[:lower:]'| anew | wc -l)\e[0m"
-		find . | grep .txt | sed 's/.txt//g' | cut -d "/" -f2 | grep  '\.' >> subfinder.domains
-	        subfinder -dL subfinder.domains --silent -recursive -o output/$cdir/subfinder.txtls > /dev/null 2>&1
-		rm subfinder.domains
-		cat output/$cdir/subfinder.txtls | unfurl domains >> all.txtls
-		rm *.zip
-		rm *.txt
-	fi
-        rm index.json*
-else
-	:
-fi
+#echo -n "Is this program is in the CHAOS dataset? (y/n)? "
+#answer=no
+#read answer
+#if [ "$answer" != "${answer#[Yy]}" ] ;then
+#        curl -s https://chaos-data.projectdiscovery.io/index.json -o index.json
+#	chaosvar=`cat index.json | grep -w $cdir | grep "URL" | sed 's/"URL": "//;s/",//' | xargs`
+#	if [ -z "$chaosvar" ]
+#	then
+#		echo -e "\e[36mSorry! could not find data in CHAOS DB...\e[0m"
+#		subfinder -d $domain_name --silent -o output/$cdir/subfinder.txtls > /dev/null 2>&1
+#	        cat output/$cdir/subfinder.txtls | unfurl domains >> all.txtls
+#	else
+#		curl -s "$chaosvar" -O
+#		unzip -qq *.zip
+#		cat *.txt >> output/$cdir/chaos.txtls
+#		cat output/$cdir/chaos.txtls | unfurl domains >> all.txtls
+#		echo -e "\e[36mChaos count: \e[32m$(cat output/$cdir/chaos.txtls | tr '[:upper:]' '[:lower:]'| anew | wc -l)\e[0m"
+#		find . | grep .txt | sed 's/.txt//g' | cut -d "/" -f2 | grep  '\.' >> subfinder.domains
+#	        subfinder -dL subfinder.domains --silent -recursive -o output/$cdir/subfinder.txtls > /dev/null 2>&1
+#		rm subfinder.domains
+#		cat output/$cdir/subfinder.txtls | unfurl domains >> all.txtls
+#		rm *.zip
+#		rm *.txt
+#	fi
+ #       rm index.json*
+#else
+#	:
+#fi
 
 #################### AMASS ENUMERATION #############################
 
